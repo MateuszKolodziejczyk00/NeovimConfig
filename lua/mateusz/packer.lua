@@ -122,4 +122,8 @@ return require('packer').startup(function(use)
 	})
 
 	use {'kevinhwang91/nvim-bqf'}
+
+	use {'sphamba/smear-cursor.nvim'}
+
+	use 'easymotion/vim-easymotion'
 end)

@@ -38,8 +38,11 @@ vim.keymap.set("n", "<M-h>", "<C-w>h", { desc = "Move to left window" })
 vim.keymap.set("n", "<M-j>", "<C-w>j", { desc = "Move to window below" })
 vim.keymap.set("n", "<M-k>", "<C-w>k", { desc = "Move to window above" })
 vim.keymap.set("n", "<M-l>", "<C-w>l", { desc = "Move to right window" })
-
+vim.keymap.set("n", "<M-v>", "<cmd>vsplit<CR>", { desc = "Vertical Split" })
 vim.keymap.set("n", "<leader>]", "<cmd>copen25<CR>zz", { desc = "Open quickfix" })
+
 vim.keymap.set("n", "<leader>[", "<cmd>cclose<CR>zz", { desc = "Close quickfix" })
 vim.keymap.set("n", "<C-]>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
 vim.keymap.set("n", "<C-[>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix" })
+
+vim.keymap.set("n", "m", "<Plug>(easymotion-prefix)")

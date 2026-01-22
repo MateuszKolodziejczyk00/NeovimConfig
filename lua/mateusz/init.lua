@@ -12,3 +12,5 @@ local wilder = require('wilder')
 wilder.setup({modes = {':', '/', '?'}})
 
 vim.opt.cursorline = true
+
+require('smear_cursor').enabled = true
