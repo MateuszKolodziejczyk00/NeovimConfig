@@ -22,7 +22,7 @@ local search_dirs = get_search_dirs()
 
 local trouble = require("trouble.sources.telescope")
 
--- Setup telescope with VULKAN_SDK in search paths
+
 telescope.setup({
 	defaults = {
 		file_ignore_patterns = { 
@@ -43,11 +43,16 @@ telescope.setup({
 		},
 		lsp_dynamic_workspace_symbols = {
 			sorter = require('telescope.sorters').get_fzy_sorter(),
-			fname_width = 100,
-			show_line = true
+			fname_width = 0.5,
+			symbol_width = 0.4,
+			symbol_type_width = 0.1,
+			show_line   = true
 		},
 		layout_config = {
 			preview_cutoff = 5
+		},
+		find_files = {
+			fname_width = 0.5
 		}
 	},
 	pickers = {
@@ -69,54 +74,34 @@ telescope.setup({
 	}
 })
 
+
 require('telescope').load_extension('fzf')
 
+require "mateusz.telescope.multigrep".setup()
 
 vim.keymap.set('n', '<leader>of', function()
-	builtin.find_files()
+	builtin.find_files({ sorter = require('telescope.sorters').get_fzy_sorter() })
 end, { desc = 'Telescope find files' })
 
 -- Search file under cursor
 vim.keymap.set('n', '<leader>ov', function()
 	local word = vim.fn.expand('<cword>')
-	builtin.find_files({ default_text = word })
+	builtin.find_files({ default_text = word, sorter = require('telescope.sorters').get_fzy_sorter() })
 end, { desc = 'Search symbol under cursor' })
 
 
 vim.keymap.set('n', '<leader>os', function()
-	builtin.lsp_dynamic_workspace_symbols({symbols = {"struct","class","function","method","type"} })
+	builtin.lsp_dynamic_workspace_symbols({symbols = {"struct","class","function","method","type"}, sorter = require('telescope.sorters').get_fzy_sorter(), fname_width = 0.5,symbol_width=0.4, symbol_type_width = 0.1 })
 end, {desc = "Search symbols in current buffer"})
 
 -- Search symbol under cursor
 vim.keymap.set('n', '<leader>ox', function()
 	local word = vim.fn.expand('<cword>')
-	builtin.lsp_dynamic_workspace_symbols({ default_text = word })
+	builtin.lsp_dynamic_workspace_symbols({ default_text = word, symbols = {"struct","class","function","method","type"}, sorter = require('telescope.sorters').get_fzy_sorter(), fname_width = 0.5,symbol_width=0.4, symbol_type_width = 0.1 })
 end, { desc = 'Search symbol under cursor' })
 
 
-vim.keymap.set('n', '<leader>od', function()
-	builtin.live_grep({
-		additional_args = function()
-			return { "--no-ignore-parent", "--one-file-system" }
-		end
-	})
-end, { desc = 'Live Grep' })
-
--- Live grep for word under cursor
-vim.keymap.set('n', '<leader>oc', function()
-	local word = vim.fn.expand('<cword>')
-	builtin.live_grep({
-		cwd = vim.fn.getcwd(),
-		glob_pattern = grep_extensions,
-		default_text = word,
-		additional_args = function()
-			return { "--no-ignore-parent", "--one-file-system" }
-		end
-	})
-end, { desc = 'Grep word under cursor' })
-
-
 vim.keymap.set('n', '<leader>f', builtin.lsp_references, { desc = 'Find LSP references' })
-vim.keymap.set('n', '<leader>m', builtin.lsp_document_symbols, { desc = 'Document LSP symbols' })
+vim.keymap.set('n', '<leader>m', function() builtin.lsp_document_symbols({ sorter = require('telescope.sorters').get_fzy_sorter(), fname_width = 0.5,symbol_width=0.4, symbol_type_width = 0.1 }) end, { desc = 'Document LSP symbols' })
 
 vim.keymap.set('n', '<leader>or', function() require('telescope.builtin').buffers({ sort_lastused = true, ignore_current_buffer = true }) end, { desc = 'Find recent buffer' })

@@ -46,3 +46,5 @@ vim.keymap.set("n", "<C-]>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
 vim.keymap.set("n", "<C-[>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix" })
 
 vim.keymap.set("n", "m", "<Plug>(easymotion-prefix)")
+
+vim.keymap.set("n", "<leader>y", function() require("yazi").yazi() end)

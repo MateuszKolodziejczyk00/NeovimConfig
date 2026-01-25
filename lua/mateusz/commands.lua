@@ -44,3 +44,22 @@ vim.api.nvim_create_user_command("CP", function()
 	vim.fn.setreg("+", path)
 	print("Copied: " .. path)
 end, {})
+
+
+vim.api.nvim_create_user_command("VSO", function()
+	local file = vim.fn.expand("%:p")
+	local line = vim.fn.line(".")
+
+	if file == "" then
+		print("No file to open")
+		return
+	end
+
+	local cmd = string.format(
+		'start "" "devenv.exe" /edit "%s" /command "Edit.Goto %d"',
+		file,
+		line
+	)
+
+	os.execute(cmd)
+end, {})

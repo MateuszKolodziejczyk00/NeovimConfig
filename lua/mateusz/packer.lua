@@ -125,5 +125,16 @@ return require('packer').startup(function(use)
 
 	use {'sphamba/smear-cursor.nvim'}
 
-	use 'easymotion/vim-easymotion'
+	use {'easymotion/vim-easymotion'}
+
+	use {'mikavilpas/yazi.nvim'}
+
+	use {
+		'nvim-lualine/lualine.nvim',
+		requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+	}
+
+	use {'github/copilot.vim'}
+
+	use {'CopilotC-Nvim/CopilotChat.nvim'}
 end)

@@ -11,15 +11,6 @@ vim.filetype.add({
 })
 
 
-local clangd_cmd = { 
-	"clangd",
-	"--background-index",            -- Index entire project in background
-	"--clang-tidy",                  -- Enable clang-tidy checks
-	"--completion-style=detailed",   -- Better completion info
-	"--header-insertion=iwyu",       -- Smart header insertion
-	"--pch-storage=memory",          -- Store PCH in memory (faster)
-}
-
 vim.lsp.enable('clangd')
 
 
@@ -66,7 +57,7 @@ local function use_compile_commands(json_path)
 			"--background-index",
 			"--clang-tidy",
 			"--completion-style=detailed",
-			"--header-insertion=iwyu",
+			"--header-insertion=never",
 			"--pch-storage=memory",
 		},
 		filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hlsl", "hlsli", "ppfx", "mat", "mt", "mth", "scr" },
