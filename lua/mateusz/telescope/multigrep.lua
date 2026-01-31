@@ -46,9 +46,12 @@ local live_multigrep = function(opts)
 	}):find()
 end
 
-M.setup = function()
+M.setup = function(config)
+	search_dirs = config.search_dirs or { vim.fn.getcwd() }
+
 	vim.keymap.set('n', '<leader>od', function()
 		live_multigrep({
+			search_dirs = search_dirs,
 			additional_args = function()
 				return { "--no-ignore-parent", "--one-file-system" }
 			end
@@ -62,6 +65,7 @@ M.setup = function()
 			cwd = vim.fn.getcwd(),
 			glob_pattern = grep_extensions,
 			default_text = word,
+			search_dirs = search_dirs,
 			additional_args = function()
 				return { "--no-ignore-parent", "--one-file-system" }
 			end

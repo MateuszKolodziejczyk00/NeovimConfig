@@ -60,7 +60,10 @@ return require('packer').startup(function(use)
 		end
 	}
 
-	use("ThePrimeagen/harpoon")
+	use {
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+	}
 
 	use("mbbill/undotree")
 
@@ -137,4 +140,6 @@ return require('packer').startup(function(use)
 	use {'github/copilot.vim'}
 
 	use {'CopilotC-Nvim/CopilotChat.nvim'}
+
+	use { 'tommcdo/vim-lion' }
 end)

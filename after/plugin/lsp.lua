@@ -59,6 +59,7 @@ local function use_compile_commands(json_path)
 			"--completion-style=detailed",
 			"--header-insertion=never",
 			"--pch-storage=memory",
+			"--limit-results=1000"
 		},
 		filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hlsl", "hlsli", "ppfx", "mat", "mt", "mth", "scr" },
 		root_dir = vim.fs.root(0, {".git", "compile_commands.json"}),
