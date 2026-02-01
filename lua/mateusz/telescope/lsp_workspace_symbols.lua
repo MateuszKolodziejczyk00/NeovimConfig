@@ -447,10 +447,7 @@ local function custom_get_workspace_symbols_requester(bufnr, opts)
 
     if not vim.tbl_isempty(locations) then
 
-	if #words > 1 then
-		if symbol_types then
-		end
-
+	if #words > 1 or symbol_types then
 		local filtered = {}
 		for _, entry in ipairs(locations) do
 			local ordinal_lower = entry.text:lower()
@@ -470,13 +467,15 @@ local function custom_get_workspace_symbols_requester(bufnr, opts)
 
 			if matches_type then
 				local matches_all = true
-				for _, word in ipairs(words) do
+
+				for i = 2, #words do
+					local word = words[i]
 					if not ordinal_lower:find(word:lower(), 1, true) then
 						matches_all = false
 						break
 					end
 				end
-				
+
 				if matches_all then
 					table.insert(filtered, entry)
 				end

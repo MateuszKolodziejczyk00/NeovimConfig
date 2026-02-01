@@ -142,4 +142,6 @@ return require('packer').startup(function(use)
 	use {'CopilotC-Nvim/CopilotChat.nvim'}
 
 	use { 'tommcdo/vim-lion' }
+
+	use { 'wellle/targets.vim' }
 end)
