@@ -48,3 +48,7 @@ vim.keymap.set("n", "<C-[>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix" })
 vim.keymap.set("n", "m", "<Plug>(easymotion-prefix)")
 
 vim.keymap.set("n", "<leader>y", function() require("yazi").yazi() end)
+
+vim.keymap.set("n", "<leader>w", '<cmd>:w<CR>', { desc = "Save file" })
+
+vim.keymap.set("n", "<leader>q", '<cmd>:cexpr []<CR>', { desc = "Clear quickfix list" })

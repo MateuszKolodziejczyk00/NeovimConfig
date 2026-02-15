@@ -137,11 +137,38 @@ return require('packer').startup(function(use)
 		requires = { 'nvim-tree/nvim-web-devicons', opt = true }
 	}
 
-	use {'github/copilot.vim'}
-
-	use {'CopilotC-Nvim/CopilotChat.nvim'}
-
 	use { 'tommcdo/vim-lion' }
 
 	use { 'wellle/targets.vim' }
+
+	use {
+		'nvimdev/dashboard-nvim',
+		event = 'VimEnter',
+		config = function()
+			require('dashboard').setup{
+				-- config
+			}
+		end,
+		requires = {'nvim-tree/nvim-web-devicons'}
+	}
+
+	use {
+		'github/copilot.vim',
+		config = function()
+			require('copilot').setup({
+				copilot_model = 'gpt-4o'
+			})
+		end
+	}
+
+	use {
+		'CopilotC-Nvim/CopilotChat.nvim',
+		--config = function()
+		--	require("CopilotChat").setup({
+		--		model = 'claude-3.5-sonnet'
+		--	})
+		--end
+	}
+
+	use { "ThePrimeagen/99" }
 end)

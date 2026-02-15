@@ -107,3 +107,15 @@ vim.keymap.set('n', '<leader>f', builtin.lsp_references, { desc = 'Find LSP refe
 vim.keymap.set('n', '<leader>m', function() builtin.lsp_document_symbols({ sorter = require('telescope.sorters').get_fzy_sorter(), fname_width = 0.5,symbol_width=0.4, symbol_type_width = 0.1 }) end, { desc = 'Document LSP symbols' })
 
 vim.keymap.set('n', '<leader>or', function() require('telescope.builtin').buffers({ sort_lastused = true, ignore_current_buffer = true }) end, { desc = 'Find recent buffer' })
+
+local notes_dir = vim.g.notes_dir
+
+if notes_dir then
+	vim.keymap.set('n', '<leader>on', function()
+		builtin.find_files({ search_dirs = { notes_dir } })
+	end, { desc = 'Find notes' })
+
+	vim.keymap.set('n', '<leader>oh', function()
+		builtin.live_grep({ search_dirs = { notes_dir } })
+	end, { desc = 'Grep in Notes' })
+end
