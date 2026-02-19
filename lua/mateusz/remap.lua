@@ -52,3 +52,8 @@ vim.keymap.set("n", "<leader>y", function() require("yazi").yazi() end)
 vim.keymap.set("n", "<leader>w", '<cmd>:w<CR>', { desc = "Save file" })
 
 vim.keymap.set("n", "<leader>q", '<cmd>:cexpr []<CR>', { desc = "Clear quickfix list" })
+
+local _99 = require("99")
+
+vim.keymap.set("v", "<leader>h", function() _99.visual() end)
+vim.keymap.set("v", "<leader>j", function() _99.stop_all_requests() end)

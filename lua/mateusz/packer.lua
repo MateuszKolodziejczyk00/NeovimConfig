@@ -18,13 +18,6 @@ return require('packer').startup(function(use)
 	}
 	use('nvim-treesitter/playground')
 
-	use({
-		"stevearc/oil.nvim",
-		config = function()
-			require("oil").setup()
-		end,
-	})
-
 	-- command Autocompletion
 	use {
 		'gelguy/wilder.nvim',
@@ -40,7 +33,21 @@ return require('packer').startup(function(use)
 		end
 	}
 
-	use 'motiongorilla/p4nvim'
+	use {
+		'guillemaru/perfnvim',
+		opt = false,
+		config = function()
+			require('perfnvim').setup()
+
+			vim.keymap.set("n", "<leader>pa", function() require("perfnvim").P4add() end, { noremap = true, silent = true, desc = "'p4 add' current buffer" })
+			vim.keymap.set("n", "<leader>pe", function() require("perfnvim").P4edit() end, { noremap = true, silent = true, desc = "'p4 edit' current buffer" })
+			--vim.keymap.set("n", "<leader>pR", ":!p4 revert -a %<CR>", { noremap = true, silent = true, desc = "Revert if unchanged" })
+			vim.keymap.set("n", "<leader>pj", function() require("perfnvim").P4next() end, { noremap = true, silent = true, desc = "Jump to next changed line" })
+			vim.keymap.set("n", "<leader>pk", function() require("perfnvim").P4prev() end, { noremap = true, silent = true, desc = "Jump to previous changed line" })
+			vim.keymap.set("n", "<leader>pr", function() require("perfnvim").P4opened() end, { noremap = true, silent = true, desc = "'p4 opened' (telescope)" })
+			vim.keymap.set("n", "<leader>pg", function() require("perfnvim").P4grep() end, { noremap = true, silent = true, desc = "grep p4 files" })
+		end
+	}
 
 	use({
 		"kylechui/nvim-surround",
@@ -83,7 +90,6 @@ return require('packer').startup(function(use)
 			{'saadparwaiz1/cmp_luasnip'},
 			{'hrsh7th/cmp-nvim-lsp'},
 			{'hrsh7th/cmp-nvim-lua'},
-
 			-- Snippets
 			{'L3MON4D3/LuaSnip'},
 			{'rafamadriz/friendly-snippets'},
@@ -153,12 +159,21 @@ return require('packer').startup(function(use)
 	}
 
 	use {
-		'github/copilot.vim',
+		"mboyov/pane-resizer.nvim",
 		config = function()
-			require('copilot').setup({
-				copilot_model = 'gpt-4o'
+			require("pane_resizer").setup({
+				FOCUSED_WIDTH_PERCENTAGE = 0.7,	-- Optional: focused window width (default: 0.7)
 			})
-		end
+		end,
+	}
+
+	use {
+		'github/copilot.vim',
+		--config = function()
+		--	require('copilot').setup({
+		--		copilot_model = 'gpt-4o'
+		--	})
+		--end
 	}
 
 	use {
@@ -171,4 +186,19 @@ return require('packer').startup(function(use)
 	}
 
 	use { "ThePrimeagen/99" }
+
+	use {
+		'folke/todo-comments.nvim',
+		requires = "nvim-lua/plenary.nvim",
+		config = function()
+			require("todo-comments").setup()
+		end
+	}
+
+	use {
+		"rmagatti/auto-session",
+		config = function()
+			require("auto-session").setup()
+		end
+	}
 end)
