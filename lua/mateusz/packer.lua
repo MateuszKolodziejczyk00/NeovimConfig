@@ -33,6 +33,8 @@ return require('packer').startup(function(use)
 		end
 	}
 
+	--use 'motiongorilla/p4nvim'
+
 	use {
 		'guillemaru/perfnvim',
 		opt = false,
@@ -192,13 +194,6 @@ return require('packer').startup(function(use)
 		requires = "nvim-lua/plenary.nvim",
 		config = function()
 			require("todo-comments").setup()
-		end
-	}
-
-	use {
-		"rmagatti/auto-session",
-		config = function()
-			require("auto-session").setup()
 		end
 	}
 end)

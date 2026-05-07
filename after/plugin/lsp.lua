@@ -11,9 +11,6 @@ vim.filetype.add({
 })
 
 
-vim.lsp.enable('clangd')
-
-
 local cmp = require('cmp')
 cmp.setup({
 	sources = {
@@ -34,84 +31,94 @@ cmp.setup({
 	},
 })
 
-local function use_compile_commands(json_path)
-	local cwd = vim.fn.getcwd()
-	local absolute_path = vim.fn.fnamemodify(cwd .. "/" .. json_path, ":p")
-	local dir = vim.fn.fnamemodify(absolute_path, ":h")
-	
-	if vim.fn.filereadable(absolute_path) == 0 then
-		print("compile_commands.json not found: " .. absolute_path)
-		return
-	end
-	
-	for _, client in ipairs(vim.lsp.get_clients()) do
-		if client.name == "clangd" then
-			client.stop(true)
-		end
-	end
-	
-	vim.lsp.config.clangd = {
-		cmd = { 
+local function set_lsp_keymaps()
+	vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, { desc = "LSP definitions" })
+	vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "LSP definitions" })
+	vim.keymap.set("n", "gy", function() vim.lsp.buf.type_definition() end, { desc = "LSP definitions" })
+	vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, { desc = "LSP hover" })
+	vim.keymap.set("n", "<leader>ks", function() vim.lsp.buf.workspace_symbol() end, { desc = "LSP workspace symbols" })
+	vim.keymap.set("n", "<leader>kd", function() vim.diagnostic.open_float() end, { desc = "LSP diagnostics" })
+	vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, { desc = "Next diagnostic" })
+	vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, { desc = "Previous diagnostic" })
+	vim.keymap.set("n", "<leader>ka", function() vim.lsp.buf.code_action() end, { desc = "LSP code action" })
+	vim.keymap.set("n", "<leader>kr", function() vim.lsp.buf.rename() end, { desc = "LSP rename" })
+	vim.keymap.set("i", "<C-k>", function() vim.lsp.buf.signature_help() end, { desc = "LSP signature help" })
+end
+
+local active_cwd = nil
+local clangd_enabled = false
+
+local function current_cwd()
+	return vim.fn.fnamemodify(vim.fn.getcwd(), ":p"):gsub("[/\\]$", "")
+end
+
+local function clangd_config()
+	local cwd = current_cwd()
+	return {
+		name = "clangd",
+		cmd = {
 			"clangd",
-			"--compile-commands-dir=" .. dir,
+			"--compile-commands-dir=" .. cwd,
 			"--background-index",
 			"--clang-tidy",
 			"--completion-style=detailed",
 			"--header-insertion=never",
 			"--pch-storage=memory",
-			"--limit-results=1000"
+			"--limit-results=1000",
 		},
-		filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hlsl", "hlsli", "ppfx", "mat", "mt", "mth", "scr" },
-		root_dir = vim.fs.root(0, {".git", "compile_commands.json"}),
-		on_attach = function(client, bufnr)
-			-- LSP keybindings
-			local opts = {buffer = bufnr, remap = false}
-			vim.keymap.set("n", "gd", function() require('telescope.builtin').lsp_definitions() end, opts)
-			vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-			vim.keymap.set("n", "<leader>ks", function() vim.lsp.buf.workspace_symbol() end, opts)
-			vim.keymap.set("n", "<leader>kd", function() vim.diagnostic.open_float() end, opts)
-			vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-			vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-			vim.keymap.set("n", "<leader>ka", function() vim.lsp.buf.code_action() end, opts)
-			vim.keymap.set("n", "<leader>kr", function() vim.lsp.buf.rename() end, opts)
-			vim.keymap.set("i", "<C-k>", function() vim.lsp.buf.signature_help() end, opts)
-		end,
+		filetypes = nil,
+		root_dir = cwd,
+		single_file_support = true,
 	}
-	
-	vim.lsp.enable('clangd')
-	
-	vim.defer_fn(function()
-		local bufname = vim.api.nvim_buf_get_name(0)
-		if bufname ~= "" and vim.fn.filereadable(bufname) == 1 then
-			vim.cmd("edit")
-		else
-			print("clangd reconfigured, open a source file to attach.")
-		end
-	end, 200)
 end
 
-vim.api.nvim_create_user_command("UseCompileCommands", function(opts)
-	use_compile_commands(opts.args)
-end, { nargs = 1, complete = "file" })
+local function stop_clangd_clients()
+	for _, client in ipairs(vim.lsp.get_clients({ name = "clangd" })) do
+		client.stop(true)
+	end
+end
+
+local function ensure_clangd(force_restart)
+	local cwd = current_cwd()
+	local compile_commands = cwd .. "\\compile_commands.json"
+
+	if vim.fn.filereadable(compile_commands) == 0 then
+		if active_cwd ~= nil then
+			stop_clangd_clients()
+			active_cwd = nil
+		end
+		return
+	end
+
+	if force_restart or active_cwd ~= cwd then
+		stop_clangd_clients()
+		active_cwd = cwd
+	end
+
+	local config = clangd_config()
+	vim.lsp.config.clangd = config
+	if not clangd_enabled then
+		vim.lsp.enable("clangd")
+		clangd_enabled = true
+	end
+	vim.lsp.start(config, { bufnr = vim.api.nvim_get_current_buf() })
+end
+
+set_lsp_keymaps()
+ensure_clangd(false)
+
+vim.api.nvim_create_user_command("UseCompileCommands", function()
+	ensure_clangd(true)
+end, { nargs = 0 })
 
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
-		local cwd = vim.fn.getcwd()
-		local search_paths = {
-			"compile_commands.json",
-			"build/compile_commands.json",
-			"Build/compile_commands.json",
-			"out/compile_commands.json",
-			"cmake-build-debug/compile_commands.json",
-			"cmake-build-release/compile_commands.json",
-		}
-		
-		for _, path in ipairs(search_paths) do
-			local full_path = cwd .. "/" .. path
-			if vim.fn.filereadable(full_path) == 1 then
-				use_compile_commands(path)
-				return
-			end
-		end
+		ensure_clangd(false)
+	end,
+})
+
+vim.api.nvim_create_autocmd({ "BufEnter", "DirChanged" }, {
+	callback = function()
+		ensure_clangd(false)
 	end,
 })
