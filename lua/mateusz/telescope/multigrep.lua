@@ -27,6 +27,10 @@ local live_multigrep = function(opts)
 				table.insert(args, pieces[2])
 			end
 
+			for _, dir in ipairs(opts.search_dirs) do
+				table.insert(args, dir)
+			end
+
 			---@diagnostic disable-next-line: deprecated
 			return vim.tbl_flatten {
 				args,
